@@ -181,7 +181,6 @@ public class SwipeBackLayout extends FrameLayout {
 
 
     @Override public boolean onInterceptTouchEvent(MotionEvent event) {
-        L.i("viewgroup事件分发:-------  onInterceptTouchEvent  ");
         if (!mEnable) { return false; }//如果不允许拖动直接交给上层处理
         try {
             return mDragHelper.shouldInterceptTouchEvent(event);//判断是否需要进行处理
@@ -191,7 +190,6 @@ public class SwipeBackLayout extends FrameLayout {
         }
     } //viewgroup层拦截 事件
     @Override public boolean onTouchEvent(MotionEvent event) {
-        L.i("viewgroup事件分发:-------  onTouchEvent  ");
         if (!mEnable) { return false; }
         mDragHelper.processTouchEvent(event);//分发给具体处理者
         return true;
@@ -280,7 +278,6 @@ public class SwipeBackLayout extends FrameLayout {
 
      //http://www.linuxidc.com/Linux/2016-01/127276.htm
     @Override public void computeScroll() {
-        L.i("计算滑动:-------  computeScroll  ");
         mScrimOpacity = 1 - mScrollPercent;
         if (mDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
@@ -291,7 +288,6 @@ public class SwipeBackLayout extends FrameLayout {
          private boolean mIsScrollOverValid;//滑动覆盖有效
         //滑动之前 最先进入这里  滑不滑动都进入
         @Override public boolean tryCaptureView(View view, int i) {
-            L.i("callback执行顺序:-------  tryCaptureView  ");
             boolean ret = mDragHelper.isEdgeTouched(mEdgeFlag, i);//是否触摸到了边缘
             if (ret) {
                 if (mDragHelper.isEdgeTouched(EDGE_LEFT, i)) {
@@ -322,18 +318,15 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override  public int getViewHorizontalDragRange(View child) {
-            L.i("callback执行顺序:-------  getViewHorizontalDragRange  ");
             return mEdgeFlag & (EDGE_LEFT | EDGE_RIGHT);
         }
 
         @Override public int getViewVerticalDragRange(View child) {
-            L.i("callback执行顺序:-------  getViewVerticalDragRange  ");
             return mEdgeFlag & EDGE_BOTTOM;
         }
 
         @Override public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
-            L.i("callback执行顺序:-------  onViewPositionChanged  ");
             if ((mTrackingEdge & EDGE_LEFT) != 0) {
                 mScrollPercent = Math.abs((float) left/ (mContentView.getWidth() + mShadowLeft.getIntrinsicWidth()));
             } else if ((mTrackingEdge & EDGE_RIGHT) != 0) {
@@ -368,7 +361,6 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override  public void onViewReleased(View releasedChild, float xvel, float yvel) {
-            L.i("callback执行顺序:-------  onViewReleased  ");
             final int childWidth = releasedChild.getWidth();
             final int childHeight = releasedChild.getHeight();
 
@@ -392,7 +384,6 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override public int clampViewPositionHorizontal(View child, int left, int dx) {
-            L.i("callback执行顺序:-------  clampViewPositionHorizontal  ");
             int ret = 0;
             if ((mTrackingEdge & EDGE_LEFT) != 0) {
                 ret = Math.min(child.getWidth(), Math.max(left, 0));
@@ -403,7 +394,6 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override public int clampViewPositionVertical(View child, int top, int dy) {
-            L.i("callback执行顺序:-------  clampViewPositionVertical  ");
             int ret = 0;
             if ((mTrackingEdge & EDGE_BOTTOM) != 0) {
                 ret = Math.min(0, Math.max(top, -child.getHeight()));
@@ -414,7 +404,6 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override public void onViewDragStateChanged(int state) {
-            L.i("callback执行顺序:-------  onViewDragStateChanged  ");
             super.onViewDragStateChanged(state);
             if (mListeners != null && !mListeners.isEmpty()) {
                 for (SwipeListener listener : mListeners) {

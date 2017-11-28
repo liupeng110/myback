@@ -3,10 +3,12 @@ package com.andlp.back;
 import android.app.Activity;
 import android.app.Application;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,6 +21,8 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
     @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         Log.i("app","进入activity*****************************");
         Log.i("app","进入"+activity.getClass().getSimpleName()+".onCreated();");
+        Log.i("app","进入"+activity.getClass().getName()+".onCreated();");
+        Log.i("app","进入"+activity.getClass().getCanonicalName()+".onCreated();");
 //        MyApp.list.add(activity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {//5.0沉浸状态栏
             Window window = activity.getWindow();//透明状态栏
@@ -33,6 +37,15 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
             activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
             activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
         }
+        SwipeBack.convertActivityToTranslucent(activity);//activity背景设为透明
+        activity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        activity.getWindow().getDecorView().setBackgroundDrawable(null);
+        SwipeBackLayout   mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(activity).inflate( R.layout.swipeback_layout, null);
+        mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_ALL );
+        mSwipeBackLayout.attachToActivity(activity);//每次创建activity 就创建一个根布局
+        SwipeBack.addActivity(activity);
+
+
         ((FragmentActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new LifeCycleCallback_Fragment(),false);
 //        ((FragmentActivity)activity).getSupportFragmentManager().getFragments().get(0);
     }
@@ -55,6 +68,8 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
 //        MyApp.list.remove(activity);
         Log.i("app","进入"+activity.getClass().getSimpleName()+".onActivityDestroyed();");
         Log.i("app","进入activity///////////////////////////////////////////////");
-
     }
+
+
+
 }
