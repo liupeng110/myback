@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.andlp.back.bean.Bean_Activity;
+
 /**
  * 717219917@qq.com      2017/11/27  14:44
  */
@@ -43,7 +45,7 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
         SwipeBackLayout   mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(activity).inflate( R.layout.swipeback_layout, null);
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_ALL );
         mSwipeBackLayout.attachToActivity(activity);//每次创建activity 就创建一个根布局
-        SwipeBack.addActivity(activity);
+        SwipeBack.acts.add(new Bean_Activity(activity,mSwipeBackLayout));
 
 
         ((FragmentActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new LifeCycleCallback_Fragment(),false);
@@ -54,6 +56,17 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
     }
     @Override public void onActivityResumed(Activity activity) {
         Log.i("app","进入"+activity.getClass().getSimpleName()+".onActivityResumed();");
+
+        for (Bean_Activity act:SwipeBack.acts){
+            Log.i("app","----遍历时act名字"+act.getClass().getSimpleName());
+            Log.i("app","----当前act名字"+activity.getClass().getSimpleName());
+            if ( activity.getClass().getSimpleName().equals(act.getClass().getSimpleName())){
+                act.isOnResume=true;//设置可见
+            }
+
+        }
+
+
     }
     @Override  public void onActivityPaused(Activity activity) {
         Log.i("app","进入"+activity.getClass().getSimpleName()+".onActivityPaused();");

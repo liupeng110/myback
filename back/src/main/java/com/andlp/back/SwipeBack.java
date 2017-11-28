@@ -8,6 +8,8 @@ import android.app.Application;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 
+import com.andlp.back.bean.Bean_Activity;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,11 +23,11 @@ import java.util.Stack;
  */
 //对外接口
 public class SwipeBack {
-//    private static List   <Activity> activitys=new ArrayList<>();                     //保存所有需要侧滑的activity
+    public static List   <Bean_Activity> acts=new ArrayList<>();                     //保存所有需要侧滑的activity
     @SuppressLint("UseSparseArrays")
     private static Map<Integer,Integer> activity_stack=new HashMap<>();//这里维护activity栈       下标
 
-    private static Map<String ,Activity >  activitys  =new HashMap<>();
+//    private static Map<String ,Activity >  activitys  =new HashMap<>();
 
     public static void init(Application app){
         app.registerActivityLifecycleCallbacks(new LifeCycleCallback_Activity());//注册activity生命周期回调
@@ -41,9 +43,9 @@ public class SwipeBack {
     }
 
 
-    public static void addActivity(Activity activity){
-        activitys.put(activity.getClass().getName(),activity) ;
-    }
+//    public static void addActivity(Activity activity){
+//        activitys.put(activity.getClass().getName(),activity) ;
+//    }
 
 
     public static void remove(){}                 //移除当前activity最上层fragment
