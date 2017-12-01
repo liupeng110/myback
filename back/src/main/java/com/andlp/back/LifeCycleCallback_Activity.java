@@ -47,7 +47,7 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
         mSwipeBackLayout.attachToActivity(activity);//每次创建activity 就创建一个根布局
         SwipeBack.acts.add(new Bean_Activity(activity,mSwipeBackLayout));
 
-
+        activity.getFragmentManager().getBackStackEntryCount();
         ((FragmentActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(new LifeCycleCallback_Fragment(),false);
 //        ((FragmentActivity)activity).getSupportFragmentManager().getFragments().get(0);
     }
@@ -58,9 +58,9 @@ public class LifeCycleCallback_Activity implements Application.ActivityLifecycle
         Log.i("app","进入"+activity.getClass().getSimpleName()+".onActivityResumed();");
 
         for (Bean_Activity act:SwipeBack.acts){
-            Log.i("app","----遍历时act名字"+act.getClass().getSimpleName());
+            Log.i("app","----遍历时act名字"+act.activity.getClass().getSimpleName());
             Log.i("app","----当前act名字"+activity.getClass().getSimpleName());
-            if ( activity.getClass().getSimpleName().equals(act.getClass().getSimpleName())){
+            if ( activity.getClass().getSimpleName().equals(act.activity.getClass().getSimpleName())){
                 act.isOnResume=true;//设置可见
             }
 

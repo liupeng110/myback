@@ -3,10 +3,19 @@ package com.andlp.back;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.Application;
+import android.content.ComponentName;
+import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.andlp.back.bean.Bean_Activity;
 
@@ -16,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import static android.content.Context.ACTIVITY_SERVICE;
 
 
 /**
@@ -27,7 +38,11 @@ public class SwipeBack {
     @SuppressLint("UseSparseArrays")
     private static Map<Integer,Integer> activity_stack=new HashMap<>();//这里维护activity栈       下标
 
-//    private static Map<String ,Activity >  activitys  =new HashMap<>();
+    //新增加
+    public static  Fragment mFragment;
+    private static SwipeBackLayout mSwipeBackLayout;
+
+
 
     public static void init(Application app){
         app.registerActivityLifecycleCallbacks(new LifeCycleCallback_Activity());//注册activity生命周期回调
@@ -78,6 +93,50 @@ public class SwipeBack {
     }  // 同级切换 show一个Fragment，hide一个Fragment；切换tab的情况
 
 
+    public static SwipeBackLayout  getLayout(){
+        Activity top =getTopActivity();
+        Log.i("app","获取到的顶层activity名:"+top.getClass().getSimpleName());
+        for(Bean_Activity act:SwipeBack.acts){
+            if (act.activity.equals(top)){
+                return act.swipeBackLayout;
+            }
+        }
+        return null;
+    }
+
+    public static SwipeBackLayout  getFragmentLayout(){
+        Activity top =getTopActivity();
+        for(Bean_Activity act:SwipeBack.acts){
+            if (act.activity.equals(top)){
+                return act.swipeBackLayout;
+            }
+        }
+
+        return null;
+    }
+
+
+    public static Activity getTopActivity(){
+
+            ActivityManager am = (ActivityManager) acts.get(0).activity.getSystemService(ACTIVITY_SERVICE);
+            ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+            Log.d("app", "isTopActivity = " + cn.getClassName());
+
+        for (Bean_Activity act:SwipeBack.acts){
+            Log.i("app","----遍历时act名字"+cn.getClassName());
+            Log.i("app","----遍历时act名字"+cn.getShortClassName());
+            Log.i("app","----2遍历时act名字"+"."+act.activity.getClass().getSimpleName());
+            if ( cn.getClassName().contains(act.activity.getClass().getSimpleName())){
+                Log.i("app","获取到的顶层activity名:"+act.activity.getClass().getSimpleName());
+                return act.activity;
+            }
+        }
+
+        return null;
+    }
+
+
+
     public static Fragment getTopChildFragment(){
         Fragment fragment =null;
         return fragment;
@@ -91,6 +150,22 @@ public class SwipeBack {
         return fragment;
     }                 //
 
+
+
+
+    public static View inject(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return  onFragmentCreate(inflater,container,savedInstanceState);
+    }
+
+    private static View  onFragmentCreate(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mFragment.getContext() == null) return container;
+        mSwipeBackLayout = new SwipeBackLayout(mFragment.getContext());
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mSwipeBackLayout.setLayoutParams(params);
+        mSwipeBackLayout.setBackgroundColor(Color.TRANSPARENT);
+        container.addView(mSwipeBackLayout);
+        return  container;
+    }
 
     private static void hideSoftInput(){
 

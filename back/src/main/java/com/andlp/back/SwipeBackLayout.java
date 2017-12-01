@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,7 @@ public class SwipeBackLayout extends FrameLayout {
     private float mScrollThreshold = DEFAULT_SCROLL_THRESHOLD;//滚动的阈值，我们将关闭活动，当scrollPercent超过这个值;
     private Activity mActivity;
     private View mContentView;
+    private Fragment mFragment=null;
     private ViewDragHelper mDragHelper;
     private float mScrollPercent;
     private int mContentLeft;
@@ -88,6 +92,13 @@ public class SwipeBackLayout extends FrameLayout {
         final float minVel = MIN_FLING_VELOCITY * density;
         mDragHelper.setMinVelocity(minVel);
         mDragHelper.setMaxVelocity(minVel * 2f);
+    }
+
+    public void setmContentView(View view){
+        mContentView = view;
+    }
+    public void setmFragment(Fragment fragment){
+        mFragment =fragment;
     }
 
     public void setSensitivity(Context context, float sensitivity) {
@@ -181,7 +192,10 @@ public class SwipeBackLayout extends FrameLayout {
 
 
     @Override public boolean onInterceptTouchEvent(MotionEvent event) {
+//        Log.i("点击","进入touch事件x："+event.getRawX()+",--y："+event.getRawY()+"--"+mActivity.getClass().getSimpleName()+"--"+mFragment);
         if (!mEnable) { return false; }//如果不允许拖动直接交给上层处理
+        Log.i("2点击","进入touch事件x："+event.getRawX()+",--y："+event.getRawY()+"--"+mActivity+"--"+mFragment);
+
         try {
             return mDragHelper.shouldInterceptTouchEvent(event);//判断是否需要进行处理
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -190,7 +204,11 @@ public class SwipeBackLayout extends FrameLayout {
         }
     } //viewgroup层拦截 事件
     @Override public boolean onTouchEvent(MotionEvent event) {
+        Log.i("3点击","进入touch事件x："+event.getRawX()+",--y："+event.getRawY()+"--"+mActivity+"--"+mFragment);
+
         if (!mEnable) { return false; }
+        Log.i("4点击","进入touch事件x："+event.getRawX()+",--y："+event.getRawY()+"--"+mActivity+"--"+mFragment);
+
         mDragHelper.processTouchEvent(event);//分发给具体处理者
         return true;
     } //如果onInterceptTouchEvent为true则进入这里进行处理
@@ -260,7 +278,7 @@ public class SwipeBackLayout extends FrameLayout {
         }
     }  //绘制阴影
 
-
+     //包裹activity最外层
     public void attachToActivity(Activity activity) {
         mActivity = activity;
         TypedArray typedArray = activity.getTheme().obtainStyledAttributes(new int[]{ android.R.attr.windowBackground  });
